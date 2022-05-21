@@ -7,7 +7,7 @@ import * as moment from 'moment';
 @Component({
   selector: 'course-dialog',
   templateUrl: './course-dialog.component.html',
-  styleUrls: ['./course-dialog.component.css'],
+  styleUrls: ['./course-dialog.component.scss'],
 })
 export class CourseDialogComponent {
   form: FormGroup;
