@@ -1,8 +1,8 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { Course } from '../model/course';
+import { Course } from '../model/type';
 
 import { Observable } from 'rxjs';
-import { Lesson } from '../model/lesson';
+import { Lesson } from '../model/type';
 
 @Component({
   selector: 'course',

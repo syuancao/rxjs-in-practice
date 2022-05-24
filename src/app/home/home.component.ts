@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { createHttpObservable } from '../common/util';
-import { map, noop, Observable } from 'rxjs';
-import { Course } from '../model/course';
+import { map, noop, Observable, of } from 'rxjs';
+import { Course } from '../model/type';
 
 @Component({
   selector: 'home',
@@ -9,24 +9,23 @@ import { Course } from '../model/course';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  beginnerCourses: Course[] | undefined;
-  advancedCourses: Course[] | undefined;
+  beginnerCourses$: Observable<Course[] | undefined> = of([]);
+  advancedCourses$: Observable<Course[] | undefined> = of([]);
   constructor() {}
 
   ngOnInit() {
-    const https$ = createHttpObservable('/api/courses');
+    const https$: Observable<Record<string, Course[]>> = createHttpObservable('/api/courses');
 
     const course$: Observable<Course[] | undefined> = https$.pipe(
-      map((res: any) => Object.values(res['payload'])),
+      map((res) => Object.values(res['payload'])),
     );
 
-    course$.subscribe({
-      next: (courses) => {
-        this.beginnerCourses = courses?.filter((course) => course.category === 'BEGINNER');
-        this.advancedCourses = courses?.filter((course) => course.category === 'ADVANCED');
-      },
-      error: noop,
-      complete: () => console.log('completed'),
-    });
+    this.beginnerCourses$ = course$.pipe(
+      map((course) => course?.filter((course) => course.category === 'BEGINNER')),
+    );
+
+    this.advancedCourses$ = course$.pipe(
+      map((course) => course?.filter((course) => course.category === 'ADVANCED')),
+    );
   }
 }

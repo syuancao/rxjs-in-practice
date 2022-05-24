@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Course } from '../model/course';
+import { Course } from '../model/type';
 import { MatDialogConfig } from '@angular/material/dialog';
 
 @Component({
