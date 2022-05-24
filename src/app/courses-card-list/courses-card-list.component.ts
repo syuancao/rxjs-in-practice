@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { Course } from '../model/type';
-import { MatDialogConfig } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { CourseDialogComponent } from '../course-dialog/course-dialog.component';
 
 @Component({
   selector: 'courses-card-list',
@@ -11,7 +12,7 @@ export class CoursesCardListComponent {
   @Input()
   courses: Course[] | undefined;
 
-  constructor() {}
+  constructor(private dialog: MatDialog) {}
 
   editCourse(course: Course) {
     const dialogConfig = new MatDialogConfig();
@@ -20,5 +21,7 @@ export class CoursesCardListComponent {
     dialogConfig.autoFocus = true;
 
     dialogConfig.data = course;
+
+    const dialogRef = this.dialog.open(CourseDialogComponent, dialogConfig);
   }
 }
