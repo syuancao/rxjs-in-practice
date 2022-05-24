@@ -1,24 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { map, noop } from 'rxjs';
-import { createHttpObservable } from '../common/util';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'about',
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss'],
 })
-export class AboutComponent implements OnInit {
+export class AboutComponent {
   constructor() {}
-
-  ngOnInit() {
-    const https$ = createHttpObservable('/api/courses');
-
-    const course$ = https$.pipe(map((res: any) => Object.values(res['payload'])));
-
-    course$.subscribe({
-      next: (courses) => console.log(courses),
-      error: noop,
-      complete: () => console.log('completed'),
-    });
-  }
 }
