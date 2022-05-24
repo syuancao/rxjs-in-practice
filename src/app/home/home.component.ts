@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { createHttpObservable } from '../common/util';
-import { map, noop, Observable, of } from 'rxjs';
+import { map, Observable, of, shareReplay, tap } from 'rxjs';
 import { Course } from '../model/type';
 
 @Component({
@@ -17,9 +17,11 @@ export class HomeComponent implements OnInit {
     const https$: Observable<Record<string, Course[]>> = createHttpObservable('/api/courses');
 
     const course$: Observable<Course[] | undefined> = https$.pipe(
+      tap(() => console.log('HTTP request executed')),
       map((res) => Object.values(res['payload'])),
+      shareReplay(),
     );
-
+    course$.subscribe();
     this.beginnerCourses$ = course$.pipe(
       map((course) => course?.filter((course) => course.category === 'BEGINNER')),
     );
