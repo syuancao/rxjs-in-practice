@@ -21,7 +21,7 @@ export class HomeComponent implements OnInit {
       map((res) => Object.values(res['payload'])),
       shareReplay(),
     );
-    course$.subscribe();
+
     this.beginnerCourses$ = course$.pipe(
       map((course) => course?.filter((course) => course.category === 'BEGINNER')),
     );
