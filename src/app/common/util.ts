@@ -3,7 +3,10 @@ import { Course } from '../model/type';
 
 export function createHttpObservable(url: string): Observable<Record<string, Course[]>> {
   return new Observable((observer) => {
-    fetch(url)
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    fetch(url, { signal })
       .then((response) => response.json())
       .then((body) => {
         observer.next(body);
@@ -12,5 +15,7 @@ export function createHttpObservable(url: string): Observable<Record<string, Cou
       .catch((error) => {
         observer.error(error);
       });
+
+    return () => controller.abort();
   });
 }
