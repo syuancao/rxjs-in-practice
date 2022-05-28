@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Course } from '../model/type';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import * as moment from 'moment';
-import { concatMap, filter, from } from 'rxjs';
+import { filter, from, mergeMap } from 'rxjs';
 
 @Component({
   selector: 'course-dialog',
@@ -37,7 +37,9 @@ export class CourseDialogComponent implements OnInit {
     this.form.valueChanges
       .pipe(
         filter(() => this.form.valid),
-        concatMap((changes) => this.saveCourse(changes)),
+        // If the order is important, we should use concatMap
+        // If we want value in param, we use mergeMap
+        mergeMap((changes) => this.saveCourse(changes)),
       )
       .subscribe();
   }
