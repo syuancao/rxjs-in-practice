@@ -1,16 +1,16 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Course } from '../model/type';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import * as moment from 'moment';
-import { filter, from, mergeMap } from 'rxjs';
+import { concatMap, exhaustMap, filter, from, fromEvent } from 'rxjs';
 
 @Component({
   selector: 'course-dialog',
   templateUrl: './course-dialog.component.html',
   styleUrls: ['./course-dialog.component.scss'],
 })
-export class CourseDialogComponent implements OnInit {
+export class CourseDialogComponent implements OnInit, AfterViewInit {
   form: FormGroup;
   course: Course;
 
@@ -39,7 +39,7 @@ export class CourseDialogComponent implements OnInit {
         filter(() => this.form.valid),
         // If the order is important, we should use concatMap
         // If we want value in param, we use mergeMap
-        mergeMap((changes) => this.saveCourse(changes)),
+        concatMap((changes) => this.saveCourse(changes)),
       )
       .subscribe();
   }
@@ -54,6 +54,12 @@ export class CourseDialogComponent implements OnInit {
         },
       }),
     );
+  }
+
+  ngAfterViewInit() {
+    fromEvent(this.saveButton?.nativeElement, 'click')
+      .pipe(exhaustMap(() => this.saveCourse(this.form.value)))
+      .subscribe();
   }
 
   close() {
