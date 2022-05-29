@@ -1,7 +1,7 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Course } from '../model/type';
 
-import { map, Observable, tap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, fromEvent, map, Observable, tap } from 'rxjs';
 import { Lesson } from '../model/type';
 import { ActivatedRoute } from '@angular/router';
 import { createHttpObservable } from '../common/util';
@@ -11,7 +11,7 @@ import { createHttpObservable } from '../common/util';
   templateUrl: './course.component.html',
   styleUrls: ['./course.component.scss'],
 })
-export class CourseComponent implements OnInit {
+export class CourseComponent implements OnInit, AfterViewInit {
   course$: Observable<Record<string, Course[]>> | undefined;
   lessons$: Observable<Lesson[]> | undefined;
 
@@ -32,5 +32,15 @@ export class CourseComponent implements OnInit {
       tap(() => console.log('queryLessons HTTP request executed')),
       map((res) => Object.values(res['payload'])),
     );
+  }
+
+  ngAfterViewInit() {
+    fromEvent<any>(this.input?.nativeElement, 'keyup')
+      .pipe(
+        map((event) => event.target.value),
+        debounceTime(400),
+        distinctUntilChanged(),
+      )
+      .subscribe(console.log);
   }
 }
