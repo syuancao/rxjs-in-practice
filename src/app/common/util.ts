@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs';
-import { Course } from '../model/type';
 
-export function createHttpObservable(url: string): Observable<Record<string, Course[]>> {
+export function createHttpObservable(url: string): any {
   return new Observable((observer) => {
     const controller = new AbortController();
     const signal = controller.signal;
