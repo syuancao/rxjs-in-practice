@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { interval, map, mergeWith } from 'rxjs';
-import { createHttpObservable } from '../common/util';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'about',
@@ -10,5 +9,16 @@ import { createHttpObservable } from '../common/util';
 export class AboutComponent implements OnInit {
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    const subject = new Subject();
+
+    const series$ = subject.asObservable();
+
+    series$.subscribe(console.log);
+
+    subject.next(1);
+    subject.next(2);
+    subject.next(3);
+    subject.complete();
+  }
 }
