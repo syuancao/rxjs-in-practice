@@ -1,16 +1,16 @@
-import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Course } from '../model/type';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import * as moment from 'moment';
-import { concatMap, exhaustMap, filter, from, fromEvent } from 'rxjs';
+import { Store } from '../common/store.service';
 
 @Component({
   selector: 'course-dialog',
   templateUrl: './course-dialog.component.html',
   styleUrls: ['./course-dialog.component.scss'],
 })
-export class CourseDialogComponent implements OnInit, AfterViewInit {
+export class CourseDialogComponent {
   form: FormGroup;
   course: Course;
 
@@ -22,6 +22,7 @@ export class CourseDialogComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<CourseDialogComponent>,
     @Inject(MAT_DIALOG_DATA) course: Course,
+    private store: Store,
   ) {
     this.course = course;
 
@@ -33,33 +34,11 @@ export class CourseDialogComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit() {
-    this.form.valueChanges
-      .pipe(
-        filter(() => this.form.valid),
-        // If the order is important, we should use concatMap
-        // If we want value in param, we use mergeMap
-        concatMap((changes) => this.saveCourse(changes)),
-      )
-      .subscribe();
-  }
-
-  saveCourse(changes: any) {
-    return from(
-      fetch(`/api/courses/${this.course.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(changes),
-        headers: {
-          'content-type': 'application/json',
-        },
-      }),
+  save() {
+    this.store.saveCourse(this.course.id, this.form.value).subscribe(
+      () => this.close(),
+      (err: any) => console.log('Error saving course', err),
     );
-  }
-
-  ngAfterViewInit() {
-    fromEvent(this.saveButton?.nativeElement, 'click')
-      .pipe(exhaustMap(() => this.saveCourse(this.form.value)))
-      .subscribe();
   }
 
   close() {
