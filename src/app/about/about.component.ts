@@ -10,17 +10,5 @@ import { createHttpObservable } from '../common/util';
 export class AboutComponent implements OnInit {
   constructor() {}
 
-  ngOnInit() {
-    // const interval1$ = interval(1000);
-    //
-    // const sub = interval1$.subscribe(console.log);
-    //
-    // setTimeout(() => sub.unsubscribe(), 5000);
-
-    const http$ = createHttpObservable('/api/courses');
-
-    const sub = http$.subscribe(console.log);
-
-    setTimeout(() => sub.unsubscribe(), 0);
-  }
+  ngOnInit() {}
 }
