@@ -14,7 +14,7 @@ import {
 import { Lesson } from '../model/type';
 import { ActivatedRoute } from '@angular/router';
 import { createHttpObservable } from '../common/util';
-import { debug } from '../common/debug';
+import { debug, RxJsLoggingLevel, setRxJsLoggingLevel } from '../common/debug';
 
 @Component({
   selector: 'course',
@@ -34,18 +34,21 @@ export class CourseComponent implements OnInit, AfterViewInit {
     this.courseId = this.route.snapshot.params['id'];
 
     this.course$ = createHttpObservable(`/api/courses/${this.courseId}`).pipe(
-      tap((course) => console.log(course)),
+      debug(RxJsLoggingLevel.INFO, 'course value'),
     );
+
+    setRxJsLoggingLevel(RxJsLoggingLevel.TRACE);
   }
 
   ngAfterViewInit() {
     this.lessons$ = fromEvent<any>(this.input?.nativeElement, 'keyup').pipe(
       map((event) => event.target.value),
       startWith(''),
-      debug(RxJsLoggingLevel.INFO, 'search'),
+      debug(RxJsLoggingLevel.TRACE, 'search'),
       debounceTime(400),
       distinctUntilChanged(),
       switchMap((search) => this.loadLessons(search)),
+      debug(RxJsLoggingLevel.DEBUG, 'lessons value'),
     );
   }
 
