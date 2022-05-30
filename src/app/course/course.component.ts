@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Course } from '../model/type';
 
-import { fromEvent, interval, map, Observable, throttle } from 'rxjs';
+import { forkJoin, fromEvent, interval, map, Observable, tap, throttle } from 'rxjs';
 import { Lesson } from '../model/type';
 import { ActivatedRoute } from '@angular/router';
 import { createHttpObservable } from '../common/util';
@@ -24,11 +24,18 @@ export class CourseComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.courseId = this.route.snapshot.params['id'];
 
-    this.course$ = createHttpObservable(`/api/courses/${this.courseId}`).pipe(
-      debug(RxJsLoggingLevel.INFO, 'course value'),
-    );
+    const course$ = createHttpObservable(`/api/courses/${this.courseId}`);
 
-    setRxJsLoggingLevel(RxJsLoggingLevel.TRACE);
+    const lesson$ = this.loadLessons();
+
+    forkJoin(course$, lesson$)
+      .pipe(
+        tap(([course, lessons]) => {
+          console.log('course', course);
+          console.log('lessons', lessons);
+        }),
+      )
+      .subscribe();
   }
 
   ngAfterViewInit() {
