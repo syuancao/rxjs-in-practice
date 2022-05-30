@@ -5,10 +5,13 @@ import {
   concat,
   debounceTime,
   distinctUntilChanged,
+  first,
+  forkJoin,
   fromEvent,
   map,
   Observable,
   switchMap,
+  take,
 } from 'rxjs';
 import { Lesson } from '../model/type';
 import { ActivatedRoute } from '@angular/router';
@@ -33,9 +36,11 @@ export class CourseComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.courseId = this.route.snapshot.params['id'];
 
-    this.course$ = this.store.selectCourseById(
-      typeof this.courseId === 'number' ? this.courseId : 0,
-    );
+    this.course$ = this.store
+      .selectCourseById(typeof this.courseId === 'number' ? this.courseId : 0)
+      .pipe(first());
+
+    forkJoin(this.course$, this.loadLessons()).subscribe(console.log);
   }
 
   ngAfterViewInit() {
