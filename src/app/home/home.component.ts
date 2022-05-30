@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { createHttpObservable } from '../common/util';
-import { delayWhen, map, Observable, of, retryWhen, shareReplay, tap, timer } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { Course } from '../model/type';
-import { Store } from "../common/store.service";
+import { Store } from '../common/store.service';
 
 @Component({
   selector: 'home',
@@ -15,21 +14,8 @@ export class HomeComponent implements OnInit {
   constructor(private store: Store) {}
 
   ngOnInit() {
-    const https$ = createHttpObservable('/api/courses');
+    this.beginnerCourses$ = this.store.selectBeginnerCourses();
 
-    const course$: Observable<Course[] | undefined> = https$.pipe(
-      tap(() => console.log('HTTP request executed')),
-      map((res: any) => Object.values(res['payload'])),
-      shareReplay(),
-      retryWhen((errors) => errors.pipe(delayWhen(() => timer(2000)))),
-    );
-
-    this.beginnerCourses$ = course$.pipe(
-      map((course) => course?.filter((course) => course.category === 'BEGINNER')),
-    );
-
-    this.advancedCourses$ = course$.pipe(
-      map((course) => course?.filter((course) => course.category === 'ADVANCED')),
-    );
+    this.advancedCourses$ = this.store.selectAdvancedCourses();
   }
 }
